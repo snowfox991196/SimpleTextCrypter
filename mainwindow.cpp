@@ -2,25 +2,24 @@
 #include "ui_mainwindow.h"
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include <regex>
 
 using namespace std;
 
 bool encodeState = false;   //true = encode, false = decode
 
+string charset_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.1234567890";
+
 string cpt_encode(string input, string key){
-    string charset_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.";
     string output = "";
     string tmpkey = key + input;
-
     int charcode = 0;
     int keycode = 0;
     const char *charset = charset_string.c_str();
     const char *tmp = input.c_str();
     const char *tmpkeyset = tmpkey.c_str();
     int inputlen = input.length();
-    int charsetlen = 27;
+    int charsetlen = charset_string.length();
     int crypcode = 0;
 
     for(int i = 0;i<inputlen;i++){
@@ -43,7 +42,6 @@ string cpt_encode(string input, string key){
 }
 
 string cpt_decode(string input, string key){
-    string charset_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.";
     string output = "";
 
     int charcode = 0;
@@ -51,7 +49,7 @@ string cpt_decode(string input, string key){
     const char *charset = charset_string.c_str();
     const char *tmp = input.c_str();
     int inputlen = input.length();
-    int charsetlen = 27;
+    int charsetlen = charset_string.length();
     int crypcode = 0;
 
     for(int i = 0;i<inputlen;i++){
@@ -70,7 +68,7 @@ string cpt_decode(string input, string key){
         }
         crypcode = (charcode - keycode) % charsetlen;
         if(crypcode<0){
-            crypcode = crypcode + 27;
+            crypcode = crypcode + charsetlen;
         }
         key = key + charset[crypcode];
         output = output + charset[crypcode];
@@ -114,11 +112,11 @@ void MainWindow::on_pushButton_submit_clicked()
     string keytmp = "";
     string key = ui->lineEdit_Key->text().toStdString();
 
-    transform(input.begin(),input.end(),input.begin(),::toupper);   //转换为大写
-    transform(key.begin(),key.end(),key.begin(),::toupper);   //转换为大写
+    //transform(input.begin(),input.end(),input.begin(),::toupper);   //转换为大写
+    //transform(key.begin(),key.end(),key.begin(),::toupper);   //转换为大写
 
     //正则表达式筛选字符
-    string pattern("[A-Z]+|\\.");
+    string pattern("[A-Z]+|[a-z]+|\\.|[0-9]+");
     pattern = "[[:alpha:]]*" + pattern + "[[:alpha:]]*";
     regex r(pattern);
     smatch results;
